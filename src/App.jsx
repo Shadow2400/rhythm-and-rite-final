@@ -20,7 +20,9 @@ import {
   ChevronRight, 
   ChevronDown,
   Activity,
-  Share2
+  Share2,
+  Info,
+  X
 } from 'lucide-react';
 
 // VALIDATED SPOTIFY STREAMING DATA
@@ -59,45 +61,34 @@ const ICON_TO_EMOJI = {
 };
 
 // --- HELPER: RANDOMIZE MATCHUP POSITIONS ---
-// This flips a coin to decide if Seed A or Seed B is on the left, keeping the matchups perfectly intact.
 const shufflePairs = (array) => {
   const shuffled = [];
   for (let i = 0; i < array.length; i += 2) {
     if (array[i + 1] && Math.random() > 0.5) {
-      shuffled.push(array[i + 1], array[i]); // Swap Left and Right
+      shuffled.push(array[i + 1], array[i]); 
     } else {
-      shuffled.push(array[i], array[i + 1]); // Keep standard order
+      shuffled.push(array[i], array[i + 1]); 
     }
   }
-  return shuffled.filter(Boolean); // Strip out any undefined elements
+  return shuffled.filter(Boolean); 
 };
 
 // --- THE GOLDEN CONFETTI ENGINE ---
 const GoldenConfetti = () => {
   const pieces = Array.from({ length: 75 });
-  
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
       {pieces.map((_, i) => {
         const left = Math.random() * 100;
         const delay = Math.random() * 5;
         const duration = 2.5 + Math.random() * 4;
-        const colors = [
-          'from-yellow-300 to-yellow-500', 
-          'from-amber-300 to-amber-600', 
-          'from-yellow-100 to-yellow-300'
-        ];
+        const colors = ['from-yellow-300 to-yellow-500', 'from-amber-300 to-amber-600', 'from-yellow-100 to-yellow-300'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        
         return (
           <div
             key={i}
             className={`absolute top-[-10%] w-2 h-5 bg-gradient-to-b ${color} rounded-sm shadow-[0_0_10px_rgba(253,224,71,0.6)]`}
-            style={{
-              left: `${left}%`,
-              animation: `confettiFall ${duration}s linear ${delay}s infinite`,
-              opacity: 0,
-            }}
+            style={{ left: `${left}%`, animation: `confettiFall ${duration}s linear ${delay}s infinite`, opacity: 0 }}
           />
         );
       })}
@@ -110,7 +101,6 @@ export default function App() {
 
   const [showBanner, setShowBanner] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  // Wrap STARTING_SONGS in the shuffler right out of the gate!
   const [matchups, setMatchups] = useState(() => shufflePairs(STARTING_SONGS));
   const [winners, setWinners] = useState([]);
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
@@ -119,8 +109,11 @@ export default function App() {
   const audioPlayerRef = useRef(null);
   const [votingFor, setVotingFor] = useState(null);
   const [revealedKills, setRevealedKills] = useState([]);
-  
   const [isCopied, setIsCopied] = useState(false);
+  
+  // NEW STATES & REFS
+  const [showAbout, setShowAbout] = useState(false);
+  const arenaRef = useRef(null);
 
   if (currentMatchIndex >= matchups.length && matchups.length > 1) {
     if (matchups.length === 2) {
@@ -130,7 +123,6 @@ export default function App() {
       return null; 
     }
 
-    // Shuffle the winners before they enter the next round!
     setMatchups(shufflePairs(winners));
     setWinners([]);
     setCurrentMatchIndex(0);
@@ -183,6 +175,16 @@ export default function App() {
     }
   }, [matchups.length]); 
 
+  // --- MOBILE AUTO-FRAMING ---
+  useEffect(() => {
+    // When the match index changes, scroll the arena perfectly into view on mobile
+    if (hasStarted && matchups.length > 1 && arenaRef.current && window.innerWidth < 768) {
+      setTimeout(() => {
+        arenaRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100); // Tiny delay to let the DOM render the new cards first
+    }
+  }, [currentMatchIndex, hasStarted, matchups.length]);
+
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
     if (playingUrl === audioUrl) {
@@ -222,12 +224,10 @@ export default function App() {
     }
   };
 
-  // --- SHARE FUNCTIONALITY ---
   const handleShare = () => {
     const winner = matchups[0];
     const runnerUp = winner.defeated?.[winner.defeated.length - 1];
     
-    // Helper to extract the emoji securely
     const getEmoji = (track) => {
       const iconName = track.icon?.name || track.icon?.displayName || "ChessQueen";
       return ICON_TO_EMOJI[iconName] || "🎵";
@@ -235,7 +235,6 @@ export default function App() {
 
     const winnerEmoji = getEmoji(winner);
     
-    // Calculate Final Probability
     let finalProbText = "N/A";
     if (runnerUp) {
       const totalStreams = winner.streams + runnerUp.streams;
@@ -244,7 +243,6 @@ export default function App() {
       finalProbText = rawProb < 50 ? `${displayWinProb}% Underdog Upset!` : `${displayWinProb}% Expected Win`;
     }
 
-    // Build the Kill Feed with Emojis
     const roundPrefixes = ["R1", "QF", "SF", "FINALS"];
     let killFeed = "";
     winner.defeated.forEach((track, index) => {
@@ -252,12 +250,10 @@ export default function App() {
         const prefix = roundPrefixes[index] || `R${index + 1}`;
         const trackEmoji = getEmoji(track);
         const extraText = index === winner.defeated.length - 1 ? ` (${finalProbText})` : "";
-        
         killFeed += `${prefix}: ${trackEmoji} ${track.title}${extraText}\n`;
       }
     });
 
-    // Assemble the payload
     const shareText = `RHYTHM & RITE 🎧\n${winnerEmoji} ULTIMATE TRACK: ${winner.title}\n\nTHE TAKEDOWN:\n${killFeed}\nPlay: rhythm-and-rite.com`;
 
     navigator.clipboard.writeText(shareText).then(() => {
@@ -268,12 +264,56 @@ export default function App() {
 
   const isGameOver = matchups.length === 1;
 
+  // --- THE ABOUT MODAL COMPONENT ---
+  const AboutModal = () => {
+    if (!showAbout) return null;
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
+        <div className="bg-slate-950 border border-cyan-500/50 rounded-2xl p-8 md:p-10 max-w-lg w-full shadow-[0_0_50px_rgba(34,211,238,0.2)] relative">
+          <button 
+            onClick={() => setShowAbout(false)}
+            className="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors"
+          >
+            <X size={24} />
+          </button>
+          
+          <h2 className="text-2xl font-black text-cyan-400 tracking-widest uppercase mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+            Hunter Network Database
+          </h2>
+          
+          <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
+            <p>
+              Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> gauntlet. This terminal simulates the ultimate acoustic battleground for the K-Pop Demon Hunters universe.
+            </p>
+            <p>
+              Listen to the targets, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against global Spotify streaming data to calculate the exact statistical probability of your takedown. 
+            </p>
+            <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest">
+              Engineered and Deployed by<br/>
+              <span className="text-cyan-500 font-bold mt-1 block">Dane Wurster</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!hasStarted) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white relative overflow-hidden p-8">
+        <AboutModal />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ff00ff]/20 rounded-full blur-[120px] pointer-events-none"></div>
         
+        {/* INFO BUTTON TOP RIGHT */}
+        <button 
+          onClick={() => setShowAbout(true)}
+          className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
+        >
+          <Info size={18} />
+          <span className="hidden md:inline">Database</span>
+        </button>
+
         <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10">
           Rhythm<br/>& Rite
         </h1>
@@ -358,8 +398,7 @@ export default function App() {
       `}</style>
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative">
-        
-        {/* RENDER CONFETTI IF GAME IS OVER */}
+        <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
         {showBanner && (
@@ -389,25 +428,40 @@ export default function App() {
           </div>
         )}
 
-        <h1 className="text-4xl md:text-5xl font-black mb-2 mt-4 md:mt-8 text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-400 to-[#ff00ff] drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] tracking-widest uppercase text-center relative z-10">
-          Rhythm & Rite
-        </h1>
-        <h2 className="text-sm md:text-xl text-[#ff00ff]/70 mb-6 tracking-widest uppercase font-semibold text-center mt-2 relative z-10">
-          K-Pop Demon Hunters Bracket
-        </h2>
+        <div className="w-full max-w-5xl flex justify-between items-start mt-4 md:mt-8 mb-2 relative z-10">
+          <div className="flex-1"></div>
+          
+          <div className="flex-1 text-center">
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-400 to-[#ff00ff] drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] tracking-widest uppercase">
+              Rhythm & Rite
+            </h1>
+            <h2 className="text-sm md:text-xl text-[#ff00ff]/70 tracking-widest uppercase font-semibold mt-2">
+              K-Pop Demon Hunters Bracket
+            </h2>
+          </div>
+
+          <div className="flex-1 flex justify-end">
+            <button 
+              onClick={() => setShowAbout(true)}
+              className="text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase p-2"
+            >
+              <Info size={20} />
+              <span className="hidden md:inline">Info</span>
+            </button>
+          </div>
+        </div>
 
         {!isGameOver && (
-          <div className="mb-8 px-6 py-2 rounded-full border border-cyan-400/30 bg-black/40 text-cyan-300 text-xs font-bold tracking-[0.2em] uppercase text-center shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+          <div className="mb-8 px-6 py-2 rounded-full border border-cyan-400/30 bg-black/40 text-cyan-300 text-xs font-bold tracking-[0.2em] uppercase text-center shadow-[0_0_15px_rgba(34,211,238,0.2)] mt-4">
             <span className="hidden md:inline">🔊 Hover over a track to preview</span>
             <span className="md:hidden">📱 Tap ▶ PREVIEW to hear a track</span>
           </div>
         )}
 
         {isGameOver ? (
-          <div className="text-center bg-black/40 backdrop-blur-md p-8 md:p-16 rounded-2xl border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.5)] mt-8 mx-4 w-full max-w-5xl relative z-10">
+          <div className="text-center bg-black/40 backdrop-blur-md p-8 md:p-16 rounded-2xl border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.5)] mt-4 mx-4 w-full max-w-5xl relative z-10">
             <h2 className="text-xl md:text-2xl font-bold mb-8 text-slate-300 tracking-widest uppercase">🏆 Ultimate Track 🏆</h2>
             
-            {/* VICTORY SIGIL */}
             {(() => {
               const IconComponent = matchups[0].icon || ChessQueen;
               const isPlaying = playingUrl === matchups[0].audioFile;
@@ -430,7 +484,6 @@ export default function App() {
               {matchups[0].artist}
             </p>
 
-            {/* --- FINAL MATCHUP ANALYTICS --- */}
             {(() => {
               const winner = matchups[0];
               const runnerUp = winner.defeated?.[winner.defeated.length - 1];
@@ -489,13 +542,11 @@ export default function App() {
               return null;
             })()}
 
-            {/* BUTTON CONTROLS ROW */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
               <button 
                 onClick={() => { 
                   stopAudio(); 
                   setHoveredSide(null);
-                  // Make sure to shuffle when they hit restart!
                   setMatchups(shufflePairs(STARTING_SONGS)); 
                   setWinners([]); 
                   setCurrentMatchIndex(0); 
@@ -527,14 +578,12 @@ export default function App() {
               </button>
             </div>
 
-            {/* --- THE TAKEDOWN UI --- */}
             {matchups[0].defeated && matchups[0].defeated.length > 0 && (
               <div className="mt-16 pt-12 border-t border-cyan-900/40 w-full max-w-4xl mx-auto">
                 <h3 className="text-lg md:text-xl font-black text-cyan-400 tracking-[0.3em] uppercase mb-2 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
                   The Takedown
                 </h3>
 
-                {/* CROSSHAIR PULSE PROMPT (Responsive) */}
                 <div className="flex flex-col items-center justify-center gap-1 mb-10 text-rose-500/80">
                   <Crosshair size={16} className="animate-pulse" />
                   <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold">
@@ -561,7 +610,6 @@ export default function App() {
                               : 'bg-black/60 border-slate-800 hover:border-cyan-500 hover:bg-cyan-950/20 group cursor-pointer'
                           }`}
                         >
-                          
                           <p className={`text-[10px] uppercase tracking-widest mb-4 font-black z-10 transition-colors ${isRevealed ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'}`}>
                             {roundNames[index]}
                           </p>
@@ -586,14 +634,12 @@ export default function App() {
                           <p className="text-[10px] text-slate-500 text-center leading-tight">{track.artist}</p>
                         </div>
 
-                        {/* DESKTOP ARROW */}
                         {index < matchups[0].defeated.length - 1 && (
                           <div className="hidden md:block text-slate-700">
                             <ChevronRight size={32} />
                           </div>
                         )}
                         
-                        {/* MOBILE ARROW */}
                         {index < matchups[0].defeated.length - 1 && (
                           <div className="block md:hidden text-slate-700 py-2">
                             <ChevronDown size={32} />
@@ -607,10 +653,9 @@ export default function App() {
             )}
           </div>
         ) : (
-          <div className="w-full max-w-5xl mt-2 relative z-10">
+          <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
-              {/* --- OUTER WRAPPER LEFT --- */}
               <div 
                 key={`${matchups.length}-${matchups[currentMatchIndex].title}`} 
                 className="animate-clash-left flex-1 flex relative"
@@ -669,12 +714,10 @@ export default function App() {
                 </div>
               </div>
 
-              {/* THE "VS" TEXT */}
               <div className={`text-2xl md:text-4xl font-black text-rose-500/50 italic drop-shadow-[0_0_10px_rgba(225,29,72,0.8)] px-4 flex items-center justify-center py-2 md:py-0 transition-opacity duration-300 ${votingFor ? 'opacity-0' : 'opacity-100'}`}>
                 VS
               </div>
 
-              {/* --- OUTER WRAPPER RIGHT --- */}
               <div 
                 key={`${matchups.length}-${matchups[currentMatchIndex + 1] ? matchups[currentMatchIndex + 1].title : 'bye'}`} 
                 className="animate-clash-right flex-1 flex relative"
