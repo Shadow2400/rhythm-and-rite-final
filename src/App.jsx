@@ -21,7 +21,7 @@ import {
   ChevronDown,
   Activity,
   Share2,
-  Info,
+  Info, // KEEPING UNIVERSAL UX
   X
 } from 'lucide-react';
 
@@ -294,11 +294,11 @@ export default function App() {
             <X size={24} />
           </button>
           
-          <h2 className="text-2xl font-black text-cyan-400 tracking-widest uppercase mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-  Hunter Archives
-</h2>
+          {/* ----- RESTRICTED GRADIENT TITLE ----- */}
+          <h2 className="text-2xl font-black mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#ff00ff] to-cyan-400 selection:bg-cyan-500 selection:text-white">
+            Hunter Archives
+          </h2>
           
-          {/* ----- EDIT YOUR LORE HERE ----- */}
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
             <p>
               Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> bracket.
@@ -307,14 +307,13 @@ export default function App() {
               What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I designed this gauntlet from scratch as a love letter to the music and the <em>K-Pop Demon Hunters</em> universe.
             </p>
             <p>
-              Listen to the tracks, trust your gut, and see how your favorites stack up. Once a victor is crowned, the app cross-references your ultimate track against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
+              Listen to the tracks, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
             </p>
             <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest leading-relaxed">
               Designed and Directed by <span className="text-cyan-500 font-bold">Shadow2400</span><br/>
               <span className="text-slate-600 text-[10px]">Coded with (much) help from AI</span>
             </p>
           </div>
-          {/* --------------------------------- */}
         </div>
       </div>
     );
@@ -327,10 +326,18 @@ export default function App() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ff00ff]/20 rounded-full blur-[120px] pointer-events-none"></div>
         
-        <button onClick={() => setShowAbout(true)} className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase">
-  <Info size={18} />
-  <span className="hidden md:inline">Hunter Archives</span>
-</button>
+        <button 
+          onClick={() => setShowAbout(true)}
+          className="absolute top-6 right-6 md:top-8 md:right-8 group z-20"
+        >
+          {/* ARCADE STYLE GHOST BUTTON */}
+          <div className="px-6 py-2 border border-cyan-500 group-hover:border-[#ff00ff] rounded-md transition-all duration-300 ease-out group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2">
+            <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
+            <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
+              Hunter Archives
+            </span>
+          </div>
+        </button>
 
         <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10">
           Rhythm<br/>& Rite
@@ -456,10 +463,18 @@ export default function App() {
           </div>
 
           <div className="flex-1 flex justify-end">
-            <button onClick={() => setShowAbout(true)} className="text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase p-2">
-  <Info size={20} />
-  <span className="hidden md:inline">Hunter Archives</span>
-</button>
+            <button 
+              onClick={() => setShowAbout(true)}
+              className="group z-20"
+            >
+              {/* MAIN ARENA ARCADE STYLE GHOST BUTTON */}
+              <div className="px-6 py-2 border border-cyan-500 group-hover:border-[#ff00ff] rounded-md transition-all duration-300 ease-out group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2">
+                <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
+                <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
+                  Hunter Archives
+                </span>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -731,6 +746,7 @@ export default function App() {
                 VS
               </div>
 
+              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
                 key={isDesktop ? `desktop-right-${currentMatchIndex}-${matchups.length}` : 'mobile-right-stable'} 
                 className={isDesktop ? "animate-clash-right flex-1 flex relative" : "flex-1 flex relative"}
@@ -749,7 +765,7 @@ export default function App() {
                       ? 'scale-[1.15] border-4 border-[#ff00ff] bg-gradient-to-br from-[#ff00ff]/40 to-cyan-400/40 shadow-[0_0_80px_rgba(255,0,255,0.7)] ring-4 ring-[#ff00ff]/30 z-50' 
                       : votingFor 
                         ? 'animate-immolate pointer-events-none' 
-                        : 'bg-black/40 hover:bg-[#ff00ff]/10 border-2 border-fuchsia-900/50 hover:border-[#ff00ff] group shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(255,0,255,0.6)] animate-bob'}
+                        : 'bg-black/40 hover:bg-[#ff00ff]/10 border-2 border-fuchsia-900/50 hover:border-[#ff00ff] group shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] animate-bob'}
                   `}
                 >
                   {matchups[currentMatchIndex + 1] ? (
