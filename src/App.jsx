@@ -295,8 +295,8 @@ export default function App() {
           </button>
           
           <h2 className="text-2xl font-black text-cyan-400 tracking-widest uppercase mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-            Database
-          </h2>
+  Hunter Archives
+</h2>
           
           {/* ----- EDIT YOUR LORE HERE ----- */}
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
@@ -327,13 +327,10 @@ export default function App() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ff00ff]/20 rounded-full blur-[120px] pointer-events-none"></div>
         
-        <button 
-          onClick={() => setShowAbout(true)}
-          className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
-        >
-          <Info size={18} />
-          <span className="hidden md:inline">About</span>
-        </button>
+        <button onClick={() => setShowAbout(true)} className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase">
+  <Info size={18} />
+  <span className="hidden md:inline">Hunter Archives</span>
+</button>
 
         <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10">
           Rhythm<br/>& Rite
@@ -459,13 +456,10 @@ export default function App() {
           </div>
 
           <div className="flex-1 flex justify-end">
-            <button 
-              onClick={() => setShowAbout(true)}
-              className="text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase p-2"
-            >
-              <Info size={20} />
-              <span className="hidden md:inline">About</span>
-            </button>
+            <button onClick={() => setShowAbout(true)} className="text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase p-2">
+  <Info size={20} />
+  <span className="hidden md:inline">Hunter Archives</span>
+</button>
           </div>
         </div>
 
