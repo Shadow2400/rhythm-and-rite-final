@@ -21,7 +21,7 @@ import {
   ChevronDown,
   Activity,
   Share2,
-  Info, // UNIVERSAL UX
+  Info,
   X
 } from 'lucide-react';
 
@@ -191,7 +191,6 @@ export default function App() {
     setHoveredSide(null);
     setVotingFor(winner); 
 
-    // Mobile Pre-Scroll: Smoothly glide up while the victory animation plays
     if (!isDesktop && arenaRef.current) {
       const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 20; 
       window.scrollTo({ top: y, behavior: 'smooth' });
@@ -294,7 +293,6 @@ export default function App() {
             <X size={24} />
           </button>
           
-          {/* ----- RESTRICTED GRADIENT TITLE ----- */}
           <h2 className="text-2xl font-black mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#ff00ff] to-cyan-400 selection:bg-cyan-500 selection:text-white">
             Hunter Archives
           </h2>
@@ -330,8 +328,8 @@ export default function App() {
           onClick={() => setShowAbout(true)}
           className="absolute top-6 right-6 md:top-8 md:right-8 group z-20"
         >
-          {/* ARCADE STYLE GHOST BUTTON */}
-          <div className="px-6 py-2 border border-cyan-500 group-hover:border-[#ff00ff] rounded-md transition-all duration-300 ease-out group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2">
+          {/* ANIMATED GHOST BUTTON */}
+          <div className="px-6 py-2 border border-cyan-500 rounded-md transition-all duration-300 ease-out group-hover:border-[#ff00ff] group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2 animate-subtle-glow">
             <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
             <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
               Hunter Archives
@@ -429,9 +427,22 @@ export default function App() {
         .animate-punch {
           animation: punchIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+
+        /* NEW: THE SLOW BREATHING GLOW */
+        @keyframes subtleGlow {
+          0%, 100% { box-shadow: 0 0 0 rgba(34,211,238,0); border-color: rgba(34,211,238,0.3); }
+          50% { box-shadow: 0 0 15px rgba(34,211,238,0.4); border-color: rgba(34,211,238,0.8); }
+        }
+        .animate-subtle-glow {
+          animation: subtleGlow 4s ease-in-out infinite;
+        }
+        /* Kills the breathing animation instantly if the user hovers, so pink takes over */
+        .group:hover .animate-subtle-glow {
+          animation: none;
+        }
       `}</style>
 
-      {/* OVERFLOW ANCHOR LOCK - Protects Mobile Chrome from itself */}
+      {/* OVERFLOW ANCHOR LOCK */}
       <div 
         className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative"
         style={{ overflowAnchor: 'none' }}
@@ -439,7 +450,6 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- THE GHOST BANNER --- */}
         {showBanner && (
           <div className="fixed top-1/2 left-1/2 z-[1000] p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)] pointer-events-none animate-punch w-[320px] md:w-[450px]">
             <div className="bg-black/95 text-white py-6 md:py-8 rounded-[15px] flex items-center justify-center">
@@ -467,8 +477,8 @@ export default function App() {
               onClick={() => setShowAbout(true)}
               className="group z-20"
             >
-              {/* MAIN ARENA ARCADE STYLE GHOST BUTTON */}
-              <div className="px-6 py-2 border border-cyan-500 group-hover:border-[#ff00ff] rounded-md transition-all duration-300 ease-out group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2">
+              {/* ANIMATED GHOST BUTTON */}
+              <div className="px-6 py-2 border border-cyan-500 rounded-md transition-all duration-300 ease-out group-hover:border-[#ff00ff] group-hover:bg-[#ff00ff]/10 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.4)] flex items-center gap-2 animate-subtle-glow">
                 <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
                 <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
                   Hunter Archives
@@ -683,7 +693,6 @@ export default function App() {
           <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
-              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
                 key={isDesktop ? `desktop-left-${currentMatchIndex}-${matchups.length}` : 'mobile-left-stable'} 
                 className={isDesktop ? "animate-clash-left flex-1 flex relative" : "flex-1 flex relative"}
@@ -746,7 +755,6 @@ export default function App() {
                 VS
               </div>
 
-              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
                 key={isDesktop ? `desktop-right-${currentMatchIndex}-${matchups.length}` : 'mobile-right-stable'} 
                 className={isDesktop ? "animate-clash-right flex-1 flex relative" : "flex-1 flex relative"}
@@ -819,12 +827,12 @@ export default function App() {
               
               <button 
                 onClick={() => { 
-                stopAudio(); 
-                setHoveredSide(null);
-                setMatchups(shufflePairs(STARTING_SONGS)); 
-                setWinners([]); 
-                setCurrentMatchIndex(0); 
-                setHasStarted(false); 
+                  stopAudio(); 
+                  setHoveredSide(null);
+                  setMatchups(shufflePairs(STARTING_SONGS)); 
+                  setWinners([]); 
+                  setCurrentMatchIndex(0); 
+                  setHasStarted(false); 
                 }}                
                 className="text-[10px] md:text-xs text-slate-600 hover:text-rose-400 border border-slate-800 hover:border-rose-900 px-4 py-2 rounded-md transition-all tracking-[0.2em] uppercase"
               >
