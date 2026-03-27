@@ -298,21 +298,23 @@ export default function App() {
             Database
           </h2>
           
+          {/* ----- EDIT YOUR LORE HERE ----- */}
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
             <p>
               Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> bracket.
             </p>
             <p>
-              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I coded this gauntlet from scratch as a love letter to the music and the <em>K-Pop Demon Hunters</em> universe.
+              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I designed this gauntlet from scratch as a love letter to the music and the <em>K-Pop Demon Hunters</em> universe.
             </p>
             <p>
               Listen to the tracks, trust your gut, and see how your favorites stack up. Once a victor is crowned, the app cross-references your ultimate track against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
             </p>
-            <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest">
-              Engineered and Deployed by<br/>
-              <span className="text-cyan-500 font-bold mt-1 block">Shadow2400</span>
+            <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest leading-relaxed">
+              Designed and Directed by <span className="text-cyan-500 font-bold">Shadow2400</span><br/>
+              <span className="text-slate-600 text-[10px]">Coded with (much) help from AI</span>
             </p>
           </div>
+          {/* --------------------------------- */}
         </div>
       </div>
     );
