@@ -105,6 +105,17 @@ export default function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
 
+  // --- THE VIEWPORT SENSOR ---
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    // Initial check
+    setIsDesktop(window.innerWidth >= 768);
+    // Listener for screen rotation/resizing
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const arenaRef = useRef(null); 
 
   if (currentMatchIndex >= matchups.length && matchups.length > 1) {
@@ -148,7 +159,7 @@ export default function App() {
 
   useEffect(() => {
     if (matchups.length <= 1 || hoveredSide === null) return;
-    if (window.innerWidth < 768) return;
+    if (!isDesktop) return; // Only autoplay on desktop hover
 
     const delayTimer = setTimeout(() => {
       if (hoveredSide === 'left' && matchups[currentMatchIndex]) {
@@ -159,21 +170,13 @@ export default function App() {
     }, 500); 
 
     return () => clearTimeout(delayTimer);
-  }, [currentMatchIndex, matchups, hoveredSide]); 
+  }, [currentMatchIndex, matchups, hoveredSide, isDesktop]); 
 
   useEffect(() => {
     if (matchups.length === 1 && matchups[0]) {
       playAudio(matchups[0].audioFile);
     }
   }, [matchups.length]); 
-
-  // Smooth scroll specifically for when the "Next Round" banner disappears
-  useEffect(() => {
-    if (hasStarted && !showBanner && window.innerWidth < 768 && arenaRef.current && matchups.length > 1) {
-      const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 20;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  }, [showBanner, hasStarted]);
 
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
@@ -190,8 +193,8 @@ export default function App() {
     setHoveredSide(null);
     setVotingFor(winner); 
 
-    // THE PRE-SCROLL: Instantly start gliding the camera up while the victory animation plays
-    if (window.innerWidth < 768 && arenaRef.current) {
+    // Mobile Pre-Scroll: Smoothly glide up while the victory animation plays
+    if (!isDesktop && arenaRef.current) {
       const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 20; 
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -411,16 +414,18 @@ export default function App() {
           animation: immolate 0.8s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
 
-        @keyframes bannerFadeIn {
-          0% { opacity: 0; transform: scale(0.95); }
-          100% { opacity: 1; transform: scale(1); }
+        /* THE RESTORED ARCADE PUNCH ANIMATION */
+        @keyframes punchIn {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+          60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
-        .animate-banner {
-          animation: bannerFadeIn 0.25s ease-out forwards;
+        .animate-punch {
+          animation: punchIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
       `}</style>
 
-      {/* OVERFLOW ANCHOR LOCK */}
+      {/* OVERFLOW ANCHOR LOCK - Protects Mobile Chrome from itself */}
       <div 
         className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative"
         style={{ overflowAnchor: 'none' }}
@@ -428,14 +433,13 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
+        {/* --- THE RESTORED GHOST BANNER (Fixed Width + Arcade Punch) --- */}
         {showBanner && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none animate-banner">
-            <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
-              <div className="bg-black/95 text-white px-10 py-6 md:px-16 md:py-8 rounded-[15px] flex items-center justify-center">
-                <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap text-center">
-                  {matchups.length === 2 ? "Final Round!" : "Next Round!"}
-                </h1>
-              </div>
+          <div className="fixed top-1/2 left-1/2 z-[1000] p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)] pointer-events-none animate-punch w-[320px] md:w-[450px]">
+            <div className="bg-black/95 text-white py-6 md:py-8 rounded-[15px] flex items-center justify-center">
+              <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 text-center">
+                {matchups.length === 2 ? "Final Round!" : "Next Round!"}
+              </h1>
             </div>
           </div>
         )}
@@ -668,9 +672,10 @@ export default function App() {
           <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
+              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
-                key={`${matchups.length}-${matchups[currentMatchIndex].title}`} 
-                className="animate-clash-left flex-1 flex relative"
+                key={isDesktop ? `desktop-left-${currentMatchIndex}-${matchups.length}` : 'mobile-left-stable'} 
+                className={isDesktop ? "animate-clash-left flex-1 flex relative" : "flex-1 flex relative"}
               >
                 <div 
                   onClick={() => handleVote(matchups[currentMatchIndex])}
@@ -703,7 +708,7 @@ export default function App() {
                             ? 'text-white drop-shadow-[0_0_40px_rgba(255,255,255,1)] scale-[1.2] animate-pump'
                             : isPlaying 
                               ? 'text-cyan-400 drop-shadow-[0_0_35px_rgba(34,211,238,1)] animate-pump' 
-                              : 'text-slate-600 group-hover:text-cyan-400 drop-shadow-none group-hover:drop-shadow-[0_0_25px_rgba(255,0,255,0.8)]'
+                              : 'text-slate-600 group-hover:text-cyan-400 drop-shadow-none group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)]'
                           }
                         `} 
                       />
@@ -730,9 +735,10 @@ export default function App() {
                 VS
               </div>
 
+              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
-                key={`${matchups.length}-${matchups[currentMatchIndex + 1] ? matchups[currentMatchIndex + 1].title : 'bye'}`} 
-                className="animate-clash-right flex-1 flex relative"
+                key={isDesktop ? `desktop-right-${currentMatchIndex}-${matchups.length}` : 'mobile-right-stable'} 
+                className={isDesktop ? "animate-clash-right flex-1 flex relative" : "flex-1 flex relative"}
               >
                 <div 
                   onClick={() => handleVote(matchups[currentMatchIndex + 1])}
