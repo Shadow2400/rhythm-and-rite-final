@@ -56,7 +56,6 @@ const ICON_TO_EMOJI = {
   Plane: "✈️", HandHeart: "🫶", HeartCrack: "💔", Flame: "🔥"
 };
 
-// --- HELPER: RANDOMIZE MATCHUP POSITIONS ---
 const shufflePairs = (array) => {
   const shuffled = [];
   for (let i = 0; i < array.length; i += 2) {
@@ -69,7 +68,6 @@ const shufflePairs = (array) => {
   return shuffled.filter(Boolean); 
 };
 
-// --- THE GOLDEN CONFETTI ENGINE ---
 const GoldenConfetti = () => {
   const pieces = Array.from({ length: 75 });
   return (
@@ -106,11 +104,7 @@ export default function App() {
   const [votingFor, setVotingFor] = useState(null);
   const [revealedKills, setRevealedKills] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
-  
   const [showAbout, setShowAbout] = useState(false);
-  
-  // THE INVISIBLE SCROLL ANCHOR
-  const arenaAnchorRef = useRef(null); 
 
   if (currentMatchIndex >= matchups.length && matchups.length > 1) {
     if (matchups.length === 2) {
@@ -172,13 +166,16 @@ export default function App() {
     }
   }, [matchups.length]); 
 
-  // --- MOBILE AUTO-FRAMING (Anchor Strategy) ---
+  // --- THE INSTANT TELEPORT FIX ---
   useEffect(() => {
-    if (hasStarted && matchups.length > 1 && arenaAnchorRef.current && window.innerWidth < 768 && !showBanner) {
-      const timer = setTimeout(() => {
-        arenaAnchorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-      return () => clearTimeout(timer);
+    // When the cards swap (and the banner isn't showing), instantly lock the scroll position
+    if (hasStarted && matchups.length > 1 && window.innerWidth < 768 && !showBanner) {
+      const anchor = document.getElementById('arena-anchor');
+      if (anchor) {
+        // Find the absolute Y position of our invisible anchor and teleport there seamlessly
+        const y = anchor.getBoundingClientRect().top + window.scrollY - 20; 
+        window.scrollTo({ top: y, behavior: 'instant' });
+      }
     }
   }, [currentMatchIndex, hasStarted, matchups.length, showBanner]);
 
@@ -412,9 +409,8 @@ export default function App() {
           animation: immolate 0.8s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
 
-        /* NEW: Banner Fade-In Animation to hide font loading shifts */
         @keyframes bannerFadeIn {
-          0% { opacity: 0; transform: scale(0.9); }
+          0% { opacity: 0; transform: scale(0.95); }
           100% { opacity: 1; transform: scale(1); }
         }
         .animate-banner {
@@ -426,11 +422,11 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- FIXED GHOST BANNER (With Fade-In Mask) --- */}
+        {/* --- FIXED GHOST BANNER (Flexible Padding with Fade-In) --- */}
         {showBanner && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none animate-banner">
             <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
-              <div className="bg-black/95 text-white w-[300px] md:w-[450px] py-6 md:py-8 rounded-[15px] flex items-center justify-center">
+              <div className="bg-black/95 text-white px-10 py-6 md:px-16 md:py-8 rounded-[15px] flex items-center justify-center">
                 <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap text-center">
                   {matchups.length === 2 ? "Final Round!" : "Next Round!"}
                 </h1>
@@ -666,7 +662,7 @@ export default function App() {
         ) : (
           <div className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
             {/* INVISIBLE MOBILE SCROLL ANCHOR */}
-            <div ref={arenaAnchorRef} className="absolute -top-24 md:-top-32 w-full h-1 pointer-events-none" />
+            <div id="arena-anchor" className="absolute -top-12 md:-top-32 w-full h-1 pointer-events-none" />
             
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
