@@ -21,7 +21,7 @@ import {
   ChevronDown,
   Activity,
   Share2,
-  Info, // KEEPING UNIVERSAL UX
+  Info, // UNIVERSAL UX
   X
 } from 'lucide-react';
 
@@ -310,7 +310,7 @@ export default function App() {
               Listen to the tracks, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
             </p>
             <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest leading-relaxed">
-              Designed and Directed by <span className="text-cyan-500 font-bold">Shadow2400</span><br/>
+              Designed and Directed by <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ff00ff] to-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)] selection:bg-cyan-500 selection:text-white">Shadow2400</span><br/>
               <span className="text-slate-600 text-[10px]">Coded with (much) help from AI</span>
             </p>
           </div>
@@ -572,14 +572,14 @@ export default function App() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
               <button 
                 onClick={() => { 
-                  stopAudio(); 
-                  setHoveredSide(null);
-                  setMatchups(shufflePairs(STARTING_SONGS)); 
-                  setWinners([]); 
-                  setCurrentMatchIndex(0); 
-                  setRevealedKills([]); 
-                  setHasStarted(false); 
-                  setIsCopied(false);
+                stopAudio(); 
+                setHoveredSide(null);
+                setMatchups(shufflePairs(STARTING_SONGS)); 
+                setWinners([]); 
+                setCurrentMatchIndex(0); 
+                setRevealedKills([]); 
+                setHasStarted(false); 
+                setIsCopied(false);
                 }}
                 className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-[#ff00ff]/10 hover:bg-[#ff00ff]/20 border border-[#ff00ff]/50 hover:border-[#ff00ff] rounded-xl transition-all font-bold tracking-wider uppercase text-sm md:text-base"
               >
@@ -590,16 +590,16 @@ export default function App() {
                 onClick={handleShare}
                 className={`w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-xl transition-all font-bold tracking-wider uppercase flex items-center justify-center gap-2 text-sm md:text-base ${
                   isCopied 
-                    ? 'bg-green-500/20 border border-green-400 text-green-300 shadow-[0_0_15px_rgba(74,222,128,0.4)]' 
-                    : 'bg-cyan-500/20 hover:bg-cyan-400/30 border border-cyan-400 hover:border-cyan-300 text-cyan-50 shadow-[0_0_15px_rgba(34,211,238,0.4)] hover:shadow-[0_0_25px_rgba(34,211,238,0.6)]'
+                  ? 'bg-green-500/20 border border-green-400 text-green-300 shadow-[0_0_15px_rgba(74,222,128,0.4)]' 
+                  : 'bg-cyan-500/20 hover:bg-cyan-400/30 border border-cyan-400 hover:border-cyan-300 text-cyan-50 shadow-[0_0_15px_rgba(34,211,238,0.4)] hover:shadow-[0_0_25px_rgba(34,211,238,0.6)]'
                 }`}
               >
                 {isCopied ? (
                   <>Copied to Clipboard! ✓</>
                 ) : (
                   <>
-                    <Share2 size={18} />
-                    Share Bracket
+                  <Share2 size={18} />
+                  Share Bracket
                   </>
                 )}
               </button>
@@ -819,12 +819,12 @@ export default function App() {
               
               <button 
                 onClick={() => { 
-                  stopAudio(); 
-                  setHoveredSide(null);
-                  setMatchups(shufflePairs(STARTING_SONGS)); 
-                  setWinners([]); 
-                  setCurrentMatchIndex(0); 
-                  setHasStarted(false); 
+                stopAudio(); 
+                setHoveredSide(null);
+                setMatchups(shufflePairs(STARTING_SONGS)); 
+                setWinners([]); 
+                setCurrentMatchIndex(0); 
+                setHasStarted(false); 
                 }}                
                 className="text-[10px] md:text-xs text-slate-600 hover:text-rose-400 border border-slate-800 hover:border-rose-900 px-4 py-2 rounded-md transition-all tracking-[0.2em] uppercase"
               >
