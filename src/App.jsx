@@ -108,9 +108,7 @@ export default function App() {
   // --- THE VIEWPORT SENSOR ---
   const [isDesktop, setIsDesktop] = useState(true);
   useEffect(() => {
-    // Initial check
     setIsDesktop(window.innerWidth >= 768);
-    // Listener for screen rotation/resizing
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -159,7 +157,7 @@ export default function App() {
 
   useEffect(() => {
     if (matchups.length <= 1 || hoveredSide === null) return;
-    if (!isDesktop) return; // Only autoplay on desktop hover
+    if (!isDesktop) return; 
 
     const delayTimer = setTimeout(() => {
       if (hoveredSide === 'left' && matchups[currentMatchIndex]) {
@@ -297,19 +295,22 @@ export default function App() {
           </button>
           
           <h2 className="text-2xl font-black text-cyan-400 tracking-widest uppercase mb-6 text-center drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-            Hunter Network Database
+            Database
           </h2>
           
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
             <p>
-              Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> gauntlet. This terminal simulates the ultimate acoustic battleground for the K-Pop Demon Hunters universe.
+              Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> bracket.
             </p>
             <p>
-              Listen to the targets, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against global Spotify streaming data to calculate the exact statistical probability of your takedown. 
+              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I coded this gauntlet from scratch as a love letter to the music and the <em>K-Pop Demon Hunters</em> universe.
+            </p>
+            <p>
+              Listen to the tracks, trust your gut, and see how your favorites stack up. Once a victor is crowned, the app cross-references your ultimate track against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
             </p>
             <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest">
               Engineered and Deployed by<br/>
-              <span className="text-cyan-500 font-bold mt-1 block">Dane Wurster</span>
+              <span className="text-cyan-500 font-bold mt-1 block">Shadow2400</span>
             </p>
           </div>
         </div>
@@ -329,7 +330,7 @@ export default function App() {
           className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
         >
           <Info size={18} />
-          <span className="hidden md:inline">Database</span>
+          <span className="hidden md:inline">About</span>
         </button>
 
         <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10">
@@ -414,7 +415,6 @@ export default function App() {
           animation: immolate 0.8s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
 
-        /* THE RESTORED ARCADE PUNCH ANIMATION */
         @keyframes punchIn {
           0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
           60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
@@ -433,7 +433,7 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- THE RESTORED GHOST BANNER (Fixed Width + Arcade Punch) --- */}
+        {/* --- THE GHOST BANNER --- */}
         {showBanner && (
           <div className="fixed top-1/2 left-1/2 z-[1000] p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)] pointer-events-none animate-punch w-[320px] md:w-[450px]">
             <div className="bg-black/95 text-white py-6 md:py-8 rounded-[15px] flex items-center justify-center">
@@ -462,7 +462,7 @@ export default function App() {
               className="text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase p-2"
             >
               <Info size={20} />
-              <span className="hidden md:inline">Info</span>
+              <span className="hidden md:inline">About</span>
             </button>
           </div>
         </div>
@@ -735,7 +735,6 @@ export default function App() {
                 VS
               </div>
 
-              {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
               <div 
                 key={isDesktop ? `desktop-right-${currentMatchIndex}-${matchups.length}` : 'mobile-right-stable'} 
                 className={isDesktop ? "animate-clash-right flex-1 flex relative" : "flex-1 flex relative"}
