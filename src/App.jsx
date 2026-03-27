@@ -48,7 +48,6 @@ const STARTING_SONGS = [
   { title: "Love Me Right", artist: "EXO", audioFile: "/audio/Love Me Right.mp3", icon: HandHeart, streams: 109607891 }
 ];
 
-// --- EMOJI TRANSLATION DICTIONARY ---
 const ICON_TO_EMOJI = {
   ChessQueen: "👑", AudioWaveform: "〰️", MicVocal: "🎤", Origami: "🕊️",
   Sparkles: "✨", Guitar: "🎸", Rose: "🌹", Swords: "⚔️",
@@ -106,25 +105,7 @@ export default function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
 
-  if (currentMatchIndex >= matchups.length && matchups.length > 1) {
-    if (matchups.length === 2) {
-      setMatchups(winners);
-      setWinners([]);
-      setCurrentMatchIndex(0);
-      return null; 
-    }
-
-    setMatchups(shufflePairs(winners));
-    setWinners([]);
-    setCurrentMatchIndex(0);
-    
-    setShowBanner(true);
-    setTimeout(() => {
-      setShowBanner(false);
-    }, 2000); 
-
-    return null; 
-  }
+  const arenaRef = useRef(null); 
 
   const playAudio = (audioUrl) => {
     if (audioPlayerRef.current) {
@@ -166,19 +147,6 @@ export default function App() {
     }
   }, [matchups.length]); 
 
-  // --- THE INSTANT TELEPORT FIX ---
-  useEffect(() => {
-    // When the cards swap (and the banner isn't showing), instantly lock the scroll position
-    if (hasStarted && matchups.length > 1 && window.innerWidth < 768 && !showBanner) {
-      const anchor = document.getElementById('arena-anchor');
-      if (anchor) {
-        // Find the absolute Y position of our invisible anchor and teleport there seamlessly
-        const y = anchor.getBoundingClientRect().top + window.scrollY - 20; 
-        window.scrollTo({ top: y, behavior: 'instant' });
-      }
-    }
-  }, [currentMatchIndex, hasStarted, matchups.length, showBanner]);
-
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
     if (playingUrl === audioUrl) {
@@ -193,6 +161,12 @@ export default function App() {
 
     setHoveredSide(null);
     setVotingFor(winner); 
+
+    // THE PRE-SCROLL: Instantly start gliding the camera up while the victory animation plays
+    if (window.innerWidth < 768 && arenaRef.current) {
+      const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 40; 
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
 
     const loser = matchups[currentMatchIndex].title === winner.title 
       ? matchups[currentMatchIndex + 1] 
@@ -418,11 +392,14 @@ export default function App() {
         }
       `}</style>
 
-      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative">
+      {/* OVERFLOW ANCHOR LOCK: This stops Chrome from forcibly jumping the scrollbar */}
+      <div 
+        className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative"
+        style={{ overflowAnchor: 'none' }}
+      >
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- FIXED GHOST BANNER (Flexible Padding with Fade-In) --- */}
         {showBanner && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none animate-banner">
             <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
@@ -660,9 +637,9 @@ export default function App() {
             )}
           </div>
         ) : (
-          <div className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
+          <div className="w-full max-w-5xl mt-2 relative z-10">
             {/* INVISIBLE MOBILE SCROLL ANCHOR */}
-            <div id="arena-anchor" className="absolute -top-12 md:-top-32 w-full h-1 pointer-events-none" />
+            <div ref={arenaRef} className="absolute -top-12 md:-top-32 w-full h-1 pointer-events-none" />
             
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
