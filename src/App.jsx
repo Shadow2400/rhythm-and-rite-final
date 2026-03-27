@@ -107,6 +107,26 @@ export default function App() {
 
   const arenaRef = useRef(null); 
 
+  if (currentMatchIndex >= matchups.length && matchups.length > 1) {
+    if (matchups.length === 2) {
+      setMatchups(winners);
+      setWinners([]);
+      setCurrentMatchIndex(0);
+      return null; 
+    }
+
+    setMatchups(shufflePairs(winners));
+    setWinners([]);
+    setCurrentMatchIndex(0);
+    
+    setShowBanner(true);
+    setTimeout(() => {
+      setShowBanner(false);
+    }, 2000); 
+
+    return null; 
+  }
+
   const playAudio = (audioUrl) => {
     if (audioPlayerRef.current) {
       audioPlayerRef.current.pause();
@@ -147,6 +167,14 @@ export default function App() {
     }
   }, [matchups.length]); 
 
+  // Smooth scroll specifically for when the "Next Round" banner disappears
+  useEffect(() => {
+    if (hasStarted && !showBanner && window.innerWidth < 768 && arenaRef.current && matchups.length > 1) {
+      const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 20;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, [showBanner, hasStarted]);
+
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
     if (playingUrl === audioUrl) {
@@ -164,7 +192,7 @@ export default function App() {
 
     // THE PRE-SCROLL: Instantly start gliding the camera up while the victory animation plays
     if (window.innerWidth < 768 && arenaRef.current) {
-      const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 40; 
+      const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 20; 
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
 
@@ -392,7 +420,7 @@ export default function App() {
         }
       `}</style>
 
-      {/* OVERFLOW ANCHOR LOCK: This stops Chrome from forcibly jumping the scrollbar */}
+      {/* OVERFLOW ANCHOR LOCK */}
       <div 
         className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative"
         style={{ overflowAnchor: 'none' }}
@@ -637,10 +665,7 @@ export default function App() {
             )}
           </div>
         ) : (
-          <div className="w-full max-w-5xl mt-2 relative z-10">
-            {/* INVISIBLE MOBILE SCROLL ANCHOR */}
-            <div ref={arenaRef} className="absolute -top-12 md:-top-32 w-full h-1 pointer-events-none" />
-            
+          <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
               <div 
@@ -678,7 +703,7 @@ export default function App() {
                             ? 'text-white drop-shadow-[0_0_40px_rgba(255,255,255,1)] scale-[1.2] animate-pump'
                             : isPlaying 
                               ? 'text-cyan-400 drop-shadow-[0_0_35px_rgba(34,211,238,1)] animate-pump' 
-                              : 'text-slate-600 group-hover:text-cyan-400 drop-shadow-none group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)]'
+                              : 'text-slate-600 group-hover:text-cyan-400 drop-shadow-none group-hover:drop-shadow-[0_0_25px_rgba(255,0,255,0.8)]'
                           }
                         `} 
                       />
