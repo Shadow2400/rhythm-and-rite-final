@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 // THE VECTOR ARMORY
 import { 
   ChessQueen, 
@@ -111,9 +111,8 @@ export default function App() {
   const [revealedKills, setRevealedKills] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
   
-  // MODAL & SCROLL REFS
   const [showAbout, setShowAbout] = useState(false);
-  const scrollPositionRef = useRef(null); // Keeps track of scroll on mobile
+  const arenaRef = useRef(null); // The ref that we will scroll to on mobile
 
   if (currentMatchIndex >= matchups.length && matchups.length > 1) {
     if (matchups.length === 2) {
@@ -175,14 +174,20 @@ export default function App() {
     }
   }, [matchups.length]); 
 
-  // --- MOBILE SCROLL LOCK (The Fix) ---
-  useLayoutEffect(() => {
-    if (scrollPositionRef.current !== null && window.innerWidth < 768) {
-      // Instantly restore the exact pixel position without smooth scrolling so it doesn't snag
-      window.scrollTo(0, scrollPositionRef.current);
-      scrollPositionRef.current = null; // Clear it out until the next vote
+  // --- MOBILE AUTO-FRAMING (THE NEW FIX) ---
+  useEffect(() => {
+    // Only fire this when the match changes, we have started, and we are on mobile
+    if (hasStarted && matchups.length > 1 && arenaRef.current && window.innerWidth < 768) {
+      // Let the browser do its default jump, wait a tiny bit, then glide to the arena
+      const timer = setTimeout(() => {
+        // Find the Y position of the arena, minus 80px for a little breathing room at the top
+        const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }, 150);
+      
+      return () => clearTimeout(timer);
     }
-  }, [currentMatchIndex, matchups]); // Fires instantly when the cards swap
+  }, [currentMatchIndex, hasStarted, matchups.length]);
 
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
@@ -205,8 +210,6 @@ export default function App() {
 
     setTimeout(() => {
       stopAudio(); 
-      // Freeze the current scroll position right before the DOM rebuilds!
-      scrollPositionRef.current = window.scrollY;
       
       const advancedWinner = {
         ...winner,
@@ -265,7 +268,6 @@ export default function App() {
 
   const isGameOver = matchups.length === 1;
 
-  // --- THE ABOUT MODAL COMPONENT ---
   const AboutModal = () => {
     if (!showAbout) return null;
     return (
@@ -309,7 +311,6 @@ export default function App() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ff00ff]/20 rounded-full blur-[120px] pointer-events-none"></div>
         
-        {/* INFO BUTTON TOP RIGHT */}
         <button 
           onClick={() => setShowAbout(true)}
           className="absolute top-6 right-6 md:top-8 md:right-8 text-cyan-500/70 hover:text-cyan-400 transition-colors z-20 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
@@ -405,13 +406,15 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- FIXED GHOST BANNER --- */}
+        {/* --- FIXED GHOST BANNER (The New Fix) --- */}
         {showBanner && (
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)] pointer-events-none">
-            <div className="bg-black/95 text-white px-8 py-6 md:px-16 md:py-8 rounded-[15px] text-center whitespace-nowrap">
-              <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0">
-                {matchups.length === 2 ? "Final Round!" : "Next Round!"}
-              </h1>
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
+            <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
+              <div className="bg-black/95 text-white px-8 py-6 md:px-16 md:py-8 rounded-[15px] flex items-center justify-center">
+                <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap">
+                  {matchups.length === 2 ? "Final Round!" : "Next Round!"}
+                </h1>
+              </div>
             </div>
           </div>
         )}
@@ -641,7 +644,7 @@ export default function App() {
             )}
           </div>
         ) : (
-          <div className="w-full max-w-5xl mt-2 relative z-10">
+          <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
               <div 
