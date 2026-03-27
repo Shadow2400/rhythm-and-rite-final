@@ -27,25 +27,21 @@ import {
 
 // VALIDATED SPOTIFY STREAMING DATA
 const STARTING_SONGS = [
-  // --- TOP LEFT BRACKET ---
   { title: "Golden", artist: "HUNTR/X", audioFile: "/audio/Golden.mp3", icon: ChessQueen, streams: 1562818502 },
   { title: "Rumi's Signs", artist: "Marcelo Zarvos", audioFile: "/audio/Rumi's Signs.mp3", icon: HeartCrack, streams: 295308 },
   { title: "Strategy", artist: "TWICE", audioFile: "/audio/Strategy.mp3", icon: Crosshair, streams: 313582879 },
   { title: "Takedown (TWICE Ver)", artist: "TWICE", audioFile: "/audio/Takedown (TWICE Ver).mp3", icon: BowArrow, streams: 299684827 },
   
-  // --- BOTTOM LEFT BRACKET ---
   { title: "How It’s Done", artist: "HUNTR/X", audioFile: "/audio/How It's Done.mp3", icon: Plane, streams: 591777936 },
   { title: "오솔길 Path", artist: "Jokers", audioFile: "/audio/오솔길 Path.mp3", icon: Map, streams: 50885149 },
   { title: "What It Sounds Like", artist: "HUNTR/X", audioFile: "/audio/What It Sounds Like.mp3", icon: Sparkles, streams: 550984488 },
   { title: "Score Suite", artist: "Marcelo Zarvos", audioFile: "/audio/Score Suite.mp3", icon: AudioWaveform, streams: 53839159 },
   
-  // --- TOP RIGHT BRACKET ---
   { title: "Soda Pop", artist: "Saja Boys", audioFile: "/audio/Soda Pop.mp3", icon: CupSoda, streams: 700990932 },
   { title: "Jinu’s Lament", artist: "Ahn Hyo-seop", audioFile: "/audio/Jinu's Lament.mp3", icon: Guitar, streams: 8480771 },
   { title: "Takedown", artist: "HUNTR/X", audioFile: "/audio/Takedown.mp3", icon: Swords, streams: 473517280 },
   { title: "사랑인가 봐 Love, Maybe", artist: "MeloMance", audioFile: "/audio/사랑인가 봐 Love, Maybe.mp3", icon: Rose, streams: 198654317 },
   
-  // --- BOTTOM RIGHT BRACKET ---
   { title: "Your Idol", artist: "Saja Boys", audioFile: "/audio/Your Idol.mp3", icon: Flame, streams: 688206884 },
   { title: "Prologue (Mantra)", artist: "Zarvos / EJAE", audioFile: "/audio/Prologue.mp3", icon: MicVocal, streams: 13283743 },
   { title: "Free", artist: "Rumi & Jinu", audioFile: "/audio/Free.mp3", icon: Origami, streams: 482365287 },
@@ -112,27 +108,7 @@ export default function App() {
   const [isCopied, setIsCopied] = useState(false);
   
   const [showAbout, setShowAbout] = useState(false);
-  const arenaRef = useRef(null); // The ref that we will scroll to on mobile
-
-  if (currentMatchIndex >= matchups.length && matchups.length > 1) {
-    if (matchups.length === 2) {
-      setMatchups(winners);
-      setWinners([]);
-      setCurrentMatchIndex(0);
-      return null; 
-    }
-
-    setMatchups(shufflePairs(winners));
-    setWinners([]);
-    setCurrentMatchIndex(0);
-    
-    setShowBanner(true);
-    setTimeout(() => {
-      setShowBanner(false);
-    }, 2000); 
-
-    return null; 
-  }
+  const arenaRef = useRef(null); 
 
   const playAudio = (audioUrl) => {
     if (audioPlayerRef.current) {
@@ -153,6 +129,7 @@ export default function App() {
     setPlayingUrl(null);
   };
 
+  // Auto-play hover preview
   useEffect(() => {
     if (matchups.length <= 1 || hoveredSide === null) return;
     if (window.innerWidth < 768) return;
@@ -168,26 +145,23 @@ export default function App() {
     return () => clearTimeout(delayTimer);
   }, [currentMatchIndex, matchups, hoveredSide]); 
 
+  // Auto-play final victor
   useEffect(() => {
     if (matchups.length === 1 && matchups[0]) {
       playAudio(matchups[0].audioFile);
     }
   }, [matchups.length]); 
 
-  // --- MOBILE AUTO-FRAMING (THE NEW FIX) ---
+  // --- REFINED MOBILE AUTO-FRAMING ---
+  // Now that the DOM isn't destroying itself, we can safely and smoothly glide the camera
   useEffect(() => {
-    // Only fire this when the match changes, we have started, and we are on mobile
-    if (hasStarted && matchups.length > 1 && arenaRef.current && window.innerWidth < 768) {
-      // Let the browser do its default jump, wait a tiny bit, then glide to the arena
-      const timer = setTimeout(() => {
-        // Find the Y position of the arena, minus 80px for a little breathing room at the top
-        const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 80;
+    if (hasStarted && matchups.length > 1 && arenaRef.current && window.innerWidth < 768 && !showBanner) {
+      setTimeout(() => {
+        const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 40; 
         window.scrollTo({ top: y, behavior: 'smooth' });
-      }, 150);
-      
-      return () => clearTimeout(timer);
+      }, 50);
     }
-  }, [currentMatchIndex, hasStarted, matchups.length]);
+  }, [currentMatchIndex, hasStarted, matchups.length, showBanner]);
 
   const handleMobilePreview = (e, audioUrl) => {
     e.stopPropagation(); 
@@ -198,6 +172,7 @@ export default function App() {
     }
   };
 
+  // --- THE NEW GAME LOGIC ENGINE ---
   const handleVote = (winner) => {
     if (votingFor) return; 
 
@@ -216,9 +191,34 @@ export default function App() {
         defeated: loser ? [...(winner.defeated || []), loser] : (winner.defeated || [])
       };
 
-      setWinners(prevWinners => [...prevWinners, advancedWinner]);
-      setCurrentMatchIndex(prevIndex => prevIndex + 2);
-      setVotingFor(null); 
+      const newWinners = [...winners, advancedWinner];
+
+      // Check if this was the last match of the current round
+      if (currentMatchIndex + 2 >= matchups.length) {
+        if (matchups.length === 2) {
+          // The Tournament is Over
+          setMatchups(newWinners);
+          setWinners([]);
+          setCurrentMatchIndex(0);
+          setVotingFor(null);
+        } else {
+          // A standard round is over. Trigger the banner, but DO NOT delete the DOM.
+          setShowBanner(true);
+          setMatchups(shufflePairs(newWinners));
+          setWinners([]);
+          setCurrentMatchIndex(0);
+          setVotingFor(null);
+          
+          setTimeout(() => {
+            setShowBanner(false);
+          }, 2000);
+        }
+      } else {
+        // Normal match advance within the same round
+        setWinners(newWinners);
+        setCurrentMatchIndex(prevIndex => prevIndex + 2);
+        setVotingFor(null); 
+      }
     }, 1000); 
   };
 
@@ -406,12 +406,12 @@ export default function App() {
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- FIXED GHOST BANNER (The New Fix) --- */}
+        {/* --- FIXED GHOST BANNER (Width-Locked to prevent jumping) --- */}
         {showBanner && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
             <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
-              <div className="bg-black/95 text-white px-8 py-6 md:px-16 md:py-8 rounded-[15px] flex items-center justify-center">
-                <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap">
+              <div className="bg-black/95 text-white w-[300px] md:w-[450px] py-6 md:py-8 rounded-[15px] flex items-center justify-center">
+                <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap text-center">
                   {matchups.length === 2 ? "Final Round!" : "Next Round!"}
                 </h1>
               </div>
