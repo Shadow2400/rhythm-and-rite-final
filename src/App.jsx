@@ -108,7 +108,29 @@ export default function App() {
   const [isCopied, setIsCopied] = useState(false);
   
   const [showAbout, setShowAbout] = useState(false);
-  const arenaRef = useRef(null); 
+  
+  // THE INVISIBLE SCROLL ANCHOR
+  const arenaAnchorRef = useRef(null); 
+
+  if (currentMatchIndex >= matchups.length && matchups.length > 1) {
+    if (matchups.length === 2) {
+      setMatchups(winners);
+      setWinners([]);
+      setCurrentMatchIndex(0);
+      return null; 
+    }
+
+    setMatchups(shufflePairs(winners));
+    setWinners([]);
+    setCurrentMatchIndex(0);
+    
+    setShowBanner(true);
+    setTimeout(() => {
+      setShowBanner(false);
+    }, 2000); 
+
+    return null; 
+  }
 
   const playAudio = (audioUrl) => {
     if (audioPlayerRef.current) {
@@ -129,7 +151,6 @@ export default function App() {
     setPlayingUrl(null);
   };
 
-  // Auto-play hover preview
   useEffect(() => {
     if (matchups.length <= 1 || hoveredSide === null) return;
     if (window.innerWidth < 768) return;
@@ -145,21 +166,19 @@ export default function App() {
     return () => clearTimeout(delayTimer);
   }, [currentMatchIndex, matchups, hoveredSide]); 
 
-  // Auto-play final victor
   useEffect(() => {
     if (matchups.length === 1 && matchups[0]) {
       playAudio(matchups[0].audioFile);
     }
   }, [matchups.length]); 
 
-  // --- REFINED MOBILE AUTO-FRAMING ---
-  // Now that the DOM isn't destroying itself, we can safely and smoothly glide the camera
+  // --- MOBILE AUTO-FRAMING (Anchor Strategy) ---
   useEffect(() => {
-    if (hasStarted && matchups.length > 1 && arenaRef.current && window.innerWidth < 768 && !showBanner) {
-      setTimeout(() => {
-        const y = arenaRef.current.getBoundingClientRect().top + window.scrollY - 40; 
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }, 50);
+    if (hasStarted && matchups.length > 1 && arenaAnchorRef.current && window.innerWidth < 768 && !showBanner) {
+      const timer = setTimeout(() => {
+        arenaAnchorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [currentMatchIndex, hasStarted, matchups.length, showBanner]);
 
@@ -172,7 +191,6 @@ export default function App() {
     }
   };
 
-  // --- THE NEW GAME LOGIC ENGINE ---
   const handleVote = (winner) => {
     if (votingFor) return; 
 
@@ -193,16 +211,13 @@ export default function App() {
 
       const newWinners = [...winners, advancedWinner];
 
-      // Check if this was the last match of the current round
       if (currentMatchIndex + 2 >= matchups.length) {
         if (matchups.length === 2) {
-          // The Tournament is Over
           setMatchups(newWinners);
           setWinners([]);
           setCurrentMatchIndex(0);
           setVotingFor(null);
         } else {
-          // A standard round is over. Trigger the banner, but DO NOT delete the DOM.
           setShowBanner(true);
           setMatchups(shufflePairs(newWinners));
           setWinners([]);
@@ -214,7 +229,6 @@ export default function App() {
           }, 2000);
         }
       } else {
-        // Normal match advance within the same round
         setWinners(newWinners);
         setCurrentMatchIndex(prevIndex => prevIndex + 2);
         setVotingFor(null); 
@@ -284,7 +298,6 @@ export default function App() {
             Hunter Network Database
           </h2>
           
-          {/* ----- EDIT YOUR LORE HERE ----- */}
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
             <p>
               Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> gauntlet. This terminal simulates the ultimate acoustic battleground for the K-Pop Demon Hunters universe.
@@ -297,8 +310,6 @@ export default function App() {
               <span className="text-cyan-500 font-bold mt-1 block">Dane Wurster</span>
             </p>
           </div>
-          {/* --------------------------------- */}
-
         </div>
       </div>
     );
@@ -400,15 +411,24 @@ export default function App() {
         .animate-immolate {
           animation: immolate 0.8s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
+
+        /* NEW: Banner Fade-In Animation to hide font loading shifts */
+        @keyframes bannerFadeIn {
+          0% { opacity: 0; transform: scale(0.9); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .animate-banner {
+          animation: bannerFadeIn 0.25s ease-out forwards;
+        }
       `}</style>
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-rose-950 text-white p-4 md:p-8 flex flex-col items-center font-sans selection:bg-cyan-500 selection:text-white relative">
         <AboutModal />
         {isGameOver && <GoldenConfetti />}
 
-        {/* --- FIXED GHOST BANNER (Width-Locked to prevent jumping) --- */}
+        {/* --- FIXED GHOST BANNER (With Fade-In Mask) --- */}
         {showBanner && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none animate-banner">
             <div className="p-[3px] rounded-[18px] bg-gradient-to-br from-[#ff00ff] to-cyan-400 shadow-[0_0_50px_rgba(128,0,255,0.5)]">
               <div className="bg-black/95 text-white w-[300px] md:w-[450px] py-6 md:py-8 rounded-[15px] flex items-center justify-center">
                 <h1 className="text-3xl md:text-5xl font-black tracking-[0.1em] uppercase m-0 whitespace-nowrap text-center">
@@ -644,7 +664,10 @@ export default function App() {
             )}
           </div>
         ) : (
-          <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10">
+          <div className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
+            {/* INVISIBLE MOBILE SCROLL ANCHOR */}
+            <div ref={arenaAnchorRef} className="absolute -top-24 md:-top-32 w-full h-1 pointer-events-none" />
+            
             <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
               
               <div 
