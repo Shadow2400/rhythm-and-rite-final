@@ -271,7 +271,7 @@ export default function App() {
       }
     });
 
-    const shareText = `RHYTHM & RITE 🎧\n${winnerEmoji} ULTIMATE TRACK: ${winner.title}\n\nTHE TAKEDOWN:\n${killFeed}\nPlay: rhythm-and-rite.com`;
+    const shareText = `RHYTHM & RITE 🎧\n${winnerEmoji} ULTIMATE TRACK: ${winner.title}\n\nTHE TAKEDOWN:\n${killFeed}\nPlay: rhythmandrite.com`;
 
     navigator.clipboard.writeText(shareText).then(() => {
       setIsCopied(true);
@@ -302,7 +302,7 @@ export default function App() {
               Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> bracket.
             </p>
             <p>
-              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I designed this gauntlet from scratch as a love letter to the music and the <em>K-Pop Demon Hunters</em> universe.
+              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I designed this gauntlet from scratch as a love letter to the music and universe of <em>K-Pop Demon Hunters</em>.
             </p>
             <p>
               Listen to the tracks, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
@@ -319,7 +319,6 @@ export default function App() {
 
   return (
     <>
-      {/* THE STYLE BLOCK IS NOW INJECTED AT THE ROOT SO ANIMATIONS LOAD IMMEDIATELY */}
       <style>{`
         @keyframes confettiFall {
           0% { transform: translateY(-10vh) rotate(0deg) scale(1); opacity: 1; }
@@ -409,7 +408,8 @@ export default function App() {
             </div>
           </button>
 
-          <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10">
+          {/* Added mt-24 here to push the title down on mobile only, clearing the absolute button */}
+          <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10 mt-24 md:mt-0">
             Rhythm<br/>& Rite
           </h1>
           <p className="text-2xl text-cyan-300/80 mb-8 tracking-[0.4em] uppercase font-semibold text-center z-10">
@@ -460,30 +460,28 @@ export default function App() {
             </div>
           )}
 
-          <div className="w-full max-w-5xl flex justify-between items-start mt-4 md:mt-8 mb-2 relative z-10">
-            <div className="flex-1"></div>
-            
-            <div className="flex-1 text-center">
+          {/* Added absolute positioning to the arena button to match the start screen */}
+          <button 
+            onClick={() => setShowAbout(true)}
+            className="absolute top-6 right-6 md:top-8 md:right-8 group z-20"
+          >
+            <div className="px-6 py-2 border border-cyan-500 bg-black/40 backdrop-blur-sm rounded-md transition-all duration-300 ease-out group-hover:border-[#ff00ff] group-hover:bg-[#ff00ff]/20 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.6)] flex items-center gap-2 animate-subtle-glow">
+              <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
+              <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
+                Hunter Archives
+              </span>
+            </div>
+          </button>
+
+          {/* Simplified header wrapper with mt-24 for mobile to perfectly center the title under the button */}
+          <div className="w-full max-w-5xl flex justify-center items-start mt-24 md:mt-8 mb-2 relative z-10">
+            <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-400 to-[#ff00ff] drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] tracking-widest uppercase">
                 Rhythm & Rite
               </h1>
               <h2 className="text-sm md:text-xl text-[#ff00ff]/70 tracking-widest uppercase font-semibold mt-2">
                 K-Pop Demon Hunters Bracket
               </h2>
-            </div>
-
-            <div className="flex-1 flex justify-end">
-              <button 
-                onClick={() => setShowAbout(true)}
-                className="group z-20"
-              >
-                <div className="px-6 py-2 border border-cyan-500 bg-black/40 backdrop-blur-sm rounded-md transition-all duration-300 ease-out group-hover:border-[#ff00ff] group-hover:bg-[#ff00ff]/20 group-hover:shadow-[0_0_20px_rgba(255,0,255,0.6)] flex items-center gap-2 animate-subtle-glow">
-                  <Info size={16} className="text-cyan-400 group-hover:text-white transition-colors" />
-                  <span className="text-xs font-bold tracking-widest uppercase text-cyan-400 group-hover:text-white transition-colors">
-                    Hunter Archives
-                  </span>
-                </div>
-              </button>
             </div>
           </div>
 
@@ -692,7 +690,6 @@ export default function App() {
             <div ref={arenaRef} className="w-full max-w-5xl mt-2 relative z-10 min-h-[700px] md:min-h-[500px]">
               <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-8">
                 
-                {/* THE HYBRID KEY: Dynamic for Desktop, Static for Mobile */}
                 <div 
                   key={isDesktop ? `desktop-left-${currentMatchIndex}-${matchups.length}` : 'mobile-left-stable'} 
                   className={isDesktop ? "animate-clash-left flex-1 flex relative" : "flex-1 flex relative"}
