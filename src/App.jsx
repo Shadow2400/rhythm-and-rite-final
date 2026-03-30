@@ -408,8 +408,8 @@ export default function App() {
             </div>
           </button>
 
-          {/* Added mt-24 here to push the title down on mobile only, clearing the absolute button */}
-          <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10 mt-24 md:mt-0">
+          {/* Added mt-16 here to push the title down on mobile only, clearing the absolute button */}
+          <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10 mt-16 md:mt-0">
             Rhythm<br/>& Rite
           </h1>
           <p className="text-2xl text-cyan-300/80 mb-8 tracking-[0.4em] uppercase font-semibold text-center z-10">
@@ -473,8 +473,8 @@ export default function App() {
             </div>
           </button>
 
-          {/* Simplified header wrapper with mt-24 for mobile to perfectly center the title under the button */}
-          <div className="w-full max-w-5xl flex justify-center items-start mt-24 md:mt-8 mb-2 relative z-10">
+          {/* Simplified header wrapper with mt-16 for mobile to perfectly center the title under the button */}
+          <div className="w-full max-w-5xl flex justify-center items-start mt-16 md:mt-8 mb-2 relative z-10">
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-400 to-[#ff00ff] drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] tracking-widest uppercase">
                 Rhythm & Rite
