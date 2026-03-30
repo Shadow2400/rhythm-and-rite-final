@@ -408,10 +408,10 @@ export default function App() {
             </div>
           </button>
 
-          {/* Added mt-16 here to push the title down on mobile only, clearing the absolute button */}
-          <h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10 mt-16 md:mt-0">
-            Rhythm<br/>& Rite
-          </h1>
+          {/* START SCREEN TITLE */}
+<h1 className="text-7xl md:text-9xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-cyan-300 to-[#ff00ff] drop-shadow-[0_0_30px_rgba(255,0,255,0.5)] tracking-widest uppercase text-center z-10 mt-12 md:mt-0">
+  Rhythm<br/>& Rite
+</h1>
           <p className="text-2xl text-cyan-300/80 mb-8 tracking-[0.4em] uppercase font-semibold text-center z-10">
             K-Pop Demon Hunters Bracket
           </p>
