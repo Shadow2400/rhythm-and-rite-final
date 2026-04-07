@@ -299,14 +299,15 @@ export default function App() {
           
           <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
             <p>
-              Welcome to the <span className="text-[#ff00ff] font-bold">Rhythm & Rite</span> bracket.
+              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I asked her: <em>"What is your favorite K-Pop Demon Hunters song?"</em> Her answer: <em>"Yes."</em> This bracket was born from a simple thought: what if you actually had to choose?
             </p>
             <p>
-              What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I designed this gauntlet from scratch as a love letter to the music and universe of <em>K-Pop Demon Hunters</em>.
+              Building this was a trial by fire. I don't know how to code, and I definitely overthought the tournament seeding (apologies to the orchestral tracks I served up as first-round fodder). Picking the perfect audio clips will probably haunt me forever—there is no "right" way to sample songs that millions of people love, but my perfectionist brain certainly tried to find it.
             </p>
             <p>
-              Listen to the tracks, trust your instincts, and vote to advance your favorite tracks. Once a victor is crowned, our network cross-references your choice against real-world Spotify streaming data to calculate the exact statistical probability of your takedown. 
+              I had grandiose visions of custom pixel art, and I nearly quit when imposter syndrome crept in. But I pushed through. This gauntlet is a love letter to the music, the universe, and the friends who inspired it. I made a thing, and I'm incredibly proud of it.
             </p>
+            
             <p className="border-t border-slate-800 pt-4 text-xs text-slate-500 text-center uppercase tracking-widest leading-relaxed">
               Designed and Directed by <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ff00ff] to-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)] selection:bg-cyan-500 selection:text-white">Shadow2400</span><br/>
               <span className="text-slate-600 text-[10px]">Coded with (much) help from AI</span>
@@ -611,6 +612,17 @@ export default function App() {
                   )}
                 </button>
               </div>
+
+{/* --- ADD THIS NEW SCROLL NUDGE BLOCK --- */}
+              {matchups[0].defeated && matchups[0].defeated.length > 0 && (
+                <div className="mt-12 mb-4 flex flex-col items-center justify-center text-cyan-400/80 animate-bounce pointer-events-none">
+                  <p className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-bold mb-2 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">
+                    Scroll for Match Analytics
+                  </p>
+                  <ChevronDown size={24} />
+                </div>
+              )}
+              {/* --------------------------------------- */}
 
               {matchups[0].defeated && matchups[0].defeated.length > 0 && (
                 <div className="mt-16 pt-12 border-t border-cyan-900/40 w-full max-w-4xl mx-auto">
