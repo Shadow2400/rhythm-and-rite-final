@@ -155,7 +155,7 @@ export default function App() {
     setPlayingUrl(null);
   };
 
-  useEffect(() => {
+useEffect(() => {
     if (matchups.length <= 1 || hoveredSide === null) return;
     if (!isDesktop) return; 
 
@@ -165,7 +165,7 @@ export default function App() {
       } else if (hoveredSide === 'right' && matchups[currentMatchIndex + 1]) {
         playAudio(matchups[currentMatchIndex + 1].audioFile);
       }
-    }, 500); 
+    }, 300); // <--- Change this from 500 to 300
 
     return () => clearTimeout(delayTimer);
   }, [currentMatchIndex, matchups, hoveredSide, isDesktop]); 
