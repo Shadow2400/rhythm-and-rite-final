@@ -419,7 +419,7 @@ export default function App() {
 
           <div className="z-10 bg-black/50 border border-fuchsia-900/50 backdrop-blur-sm rounded-xl p-6 mb-12 max-w-lg text-center shadow-[0_0_20px_rgba(0,0,0,0.5)]">
             <p className="text-slate-300 leading-relaxed mb-6 border-b border-slate-700 pb-4">
-              Click a card to vote for your favorite track and advance it to the next cycle.
+              Navigate the gauntlet by voting for your preferred tracks. Once a champion is crowned, our network weighs your outcome against global Spotify streaming data to determine the statistical odds of your final takedown.
             </p>
             <div className="space-y-3">
               <p className="text-[#ff00ff] font-bold tracking-wider uppercase text-xs md:text-sm">
