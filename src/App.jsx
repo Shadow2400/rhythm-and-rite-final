@@ -633,8 +633,8 @@ useEffect(() => {
                   <div className="flex flex-col items-center justify-center gap-1 mb-10 text-rose-500/80">
                     <Crosshair size={16} className="animate-pulse" />
                     <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold">
-                      <span className="md:hidden">Tap to verify takedowns</span>
-                      <span className="hidden md:inline">Hover to verify takedowns</span>
+                      <span className="md:hidden">Tap to pay respects to the fallen</span>
+                      <span className="hidden md:inline">Hover to pay respects to the fallen</span>
                     </p>
                   </div>
                   
