@@ -302,7 +302,7 @@ useEffect(() => {
               What started as a random conversation with my friend <span className="text-cyan-300 font-semibold">HonorableMushu</span> spiraled into a full-blown passion project. I asked her: <em>"What is your favorite K-Pop Demon Hunters song?"</em> Her answer: <em>"Yes."</em> This bracket was born from a simple thought: what if you actually had to choose?
             </p>
             <p>
-              Building this was a trial by fire. I don't know how to code, and I definitely overthought the tournament seeding (apologies to the orchestral tracks I served up as first-round fodder). Picking the perfect audio clips will probably haunt me forever. There is no "right" way to sample songs that millions of people love, but my perfectionist brain certainly tried to find it.
+              Building this was a trial by fire which took several months. I don't know how to code, and I definitely overthought the tournament seeding (apologies to the orchestral tracks I served up as first-round fodder). Picking the perfect audio clips will probably haunt me forever. There is no "right" way to sample songs that millions of people love, but my perfectionist brain certainly tried to find it.
             </p>
             <p>
               I had grandiose visions of custom pixel art and backgrounds, and I nearly quit when imposter syndrome crept in. But I pushed through. This gauntlet is a love letter to the music, the universe, and the friends who inspired it. I made a thing, and I'm incredibly proud of it.
