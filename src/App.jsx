@@ -27,25 +27,25 @@ import {
 
 // VALIDATED SPOTIFY STREAMING DATA
 const STARTING_SONGS = [
-  { title: "Golden", artist: "HUNTR/X", audioFile: "/audio/Golden.mp3", icon: ChessQueen, streams: 1562818502 },
-  { title: "Rumi's Signs", artist: "Marcelo Zarvos", audioFile: "/audio/Rumi's Signs.mp3", icon: HeartCrack, streams: 295308 },
-  { title: "Strategy", artist: "TWICE", audioFile: "/audio/Strategy.mp3", icon: Crosshair, streams: 313582879 },
-  { title: "Takedown (TWICE Ver)", artist: "TWICE", audioFile: "/audio/Takedown (TWICE Ver).mp3", icon: BowArrow, streams: 299684827 },
+  { title: "Golden", artist: "HUNTR/X", audioFile: "/audio/Golden.mp3", icon: ChessQueen, streams: 1617655556 },
+  { title: "Rumi's Signs", artist: "Marcelo Zarvos", audioFile: "/audio/Rumi's Signs.mp3", icon: HeartCrack, streams: 330228 },
+  { title: "Strategy", artist: "TWICE", audioFile: "/audio/Strategy.mp3", icon: Crosshair, streams: 321557055 },
+  { title: "Takedown (TWICE Ver)", artist: "TWICE", audioFile: "/audio/Takedown (TWICE Ver).mp3", icon: BowArrow, streams: 305882897 },
   
-  { title: "How It’s Done", artist: "HUNTR/X", audioFile: "/audio/How It's Done.mp3", icon: Plane, streams: 591777936 },
-  { title: "오솔길 Path", artist: "Jokers", audioFile: "/audio/오솔길 Path.mp3", icon: Map, streams: 50885149 },
-  { title: "What It Sounds Like", artist: "HUNTR/X", audioFile: "/audio/What It Sounds Like.mp3", icon: Sparkles, streams: 550984488 },
-  { title: "Score Suite", artist: "Marcelo Zarvos", audioFile: "/audio/Score Suite.mp3", icon: AudioWaveform, streams: 53839159 },
+  { title: "How It’s Done", artist: "HUNTR/X", audioFile: "/audio/How It's Done.mp3", icon: Plane, streams: 605112360 },
+  { title: "오솔길 Path", artist: "Jokers", audioFile: "/audio/오솔길 Path.mp3", icon: Map, streams: 51702955 },
+  { title: "What It Sounds Like", artist: "HUNTR/X", audioFile: "/audio/What It Sounds Like.mp3", icon: Sparkles, streams: 565190309 },
+  { title: "Score Suite", artist: "Marcelo Zarvos", audioFile: "/audio/Score Suite.mp3", icon: AudioWaveform, streams: 54893300 },
   
-  { title: "Soda Pop", artist: "Saja Boys", audioFile: "/audio/Soda Pop.mp3", icon: CupSoda, streams: 700990932 },
-  { title: "Jinu’s Lament", artist: "Ahn Hyo-seop", audioFile: "/audio/Jinu's Lament.mp3", icon: Guitar, streams: 8480771 },
-  { title: "Takedown", artist: "HUNTR/X", audioFile: "/audio/Takedown.mp3", icon: Swords, streams: 473517280 },
-  { title: "사랑인가 봐 Love, Maybe", artist: "MeloMance", audioFile: "/audio/사랑인가 봐 Love, Maybe.mp3", icon: Rose, streams: 198654317 },
+  { title: "Soda Pop", artist: "Saja Boys", audioFile: "/audio/Soda Pop.mp3", icon: CupSoda, streams: 716942742 },
+  { title: "Jinu’s Lament", artist: "Ahn Hyo-seop", audioFile: "/audio/Jinu's Lament.mp3", icon: Guitar, streams: 8770812 },
+  { title: "Takedown", artist: "HUNTR/X", audioFile: "/audio/Takedown.mp3", icon: Swords, streams: 484763386 },
+  { title: "사랑인가 봐 Love, Maybe", artist: "MeloMance", audioFile: "/audio/사랑인가 봐 Love, Maybe.mp3", icon: Rose, streams: 201000401 },
   
-  { title: "Your Idol", artist: "Saja Boys", audioFile: "/audio/Your Idol.mp3", icon: Flame, streams: 688206884 },
-  { title: "Prologue (Mantra)", artist: "Zarvos / EJAE", audioFile: "/audio/Prologue.mp3", icon: MicVocal, streams: 13283743 },
-  { title: "Free", artist: "Rumi & Jinu", audioFile: "/audio/Free.mp3", icon: Origami, streams: 482365287 },
-  { title: "Love Me Right", artist: "EXO", audioFile: "/audio/Love Me Right.mp3", icon: HandHeart, streams: 109607891 }
+  { title: "Your Idol", artist: "Saja Boys", audioFile: "/audio/Your Idol.mp3", icon: Flame, streams: 701699966 },
+  { title: "Prologue (Mantra)", artist: "Zarvos / EJAE", audioFile: "/audio/Prologue.mp3", icon: MicVocal, streams: 13920885 },
+  { title: "Free", artist: "Rumi & Jinu", audioFile: "/audio/Free.mp3", icon: Origami, streams: 492176220 },
+  { title: "Love Me Right", artist: "EXO", audioFile: "/audio/Love Me Right.mp3", icon: HandHeart, streams: 110183806 }
 ];
 
 const ICON_TO_EMOJI = {
@@ -542,6 +542,16 @@ useEffect(() => {
                     victoryText = "An absolute knockout. You cruised to an easy, expected victory.";
                   }
 
+                  // Calculate compounded historical probability of the full run
+                  let gauntletProbRaw = 1;
+                  winner.defeated.forEach(track => {
+                    if (track) {
+                      gauntletProbRaw *= (winner.streams / (winner.streams + track.streams));
+                    }
+                  });
+                  const gauntletProbPercent = gauntletProbRaw * 100;
+                  const displayGauntletProb = gauntletProbPercent < 0.01 ? "< 0.01" : gauntletProbPercent.toFixed(2);
+
                   return (
                     <div className="w-full max-w-2xl mx-auto my-12 bg-slate-950/80 border border-slate-700/50 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6 md:p-8 flex flex-col justify-center text-center">
                       <div className="flex items-center justify-center gap-2 mb-4">
@@ -570,6 +580,13 @@ useEffect(() => {
                       <div className="flex justify-between mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1">
                         <span>{winner.title} ({displayWinProb}%)</span>
                         <span>{runnerUp.title} ({displayLoserProb}%)</span>
+                      </div>
+
+                      <div className="mt-8 pt-6 border-t border-slate-800">
+                        <p className="text-xs text-[#ff00ff] tracking-[0.2em] uppercase font-bold mb-2">Campaign Overview</p>
+                        <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-lg mx-auto text-left">
+                          The historical probability of this track surviving your exact sequence of four takedowns was <span className="font-black text-[#ff00ff]">{displayGauntletProb}%</span>.
+                        </p>
                       </div>
                     </div>
                   );
