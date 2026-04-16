@@ -260,6 +260,16 @@ useEffect(() => {
       finalProbText = rawProb < 50 ? `${displayWinProb}% Underdog Upset!` : `${displayWinProb}% Expected Win`;
     }
 
+    // Calculate the full gauntlet probability for the share text
+    let gauntletProbRaw = 1;
+    winner.defeated.forEach(track => {
+      if (track) {
+        gauntletProbRaw *= (winner.streams / (winner.streams + track.streams));
+      }
+    });
+    const gauntletProbPercent = gauntletProbRaw * 100;
+    const displayGauntletProb = gauntletProbPercent < 0.01 ? "< 0.01" : gauntletProbPercent.toFixed(2);
+
     const roundPrefixes = ["R1", "QF", "SF", "FINALS"];
     let killFeed = "";
     winner.defeated.forEach((track, index) => {
@@ -271,7 +281,7 @@ useEffect(() => {
       }
     });
 
-    const shareText = `RHYTHM & RITE 🎧\n${winnerEmoji} ULTIMATE TRACK: ${winner.title}\n\nTHE TAKEDOWN:\n${killFeed}\nPlay: rhythmandrite.com`;
+    const shareText = `RHYTHM & RITE 🎧\n${winnerEmoji} ULTIMATE TRACK: ${winner.title}\nWIN CHANCE: ${displayGauntletProb}%\n\nTHE TAKEDOWN:\n${killFeed}\nPlay: rhythmandrite.com`;
 
     navigator.clipboard.writeText(shareText).then(() => {
       setIsCopied(true);
