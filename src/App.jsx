@@ -256,8 +256,9 @@ useEffect(() => {
     if (runnerUp) {
       const totalStreams = winner.streams + runnerUp.streams;
       const rawProb = (winner.streams / totalStreams) * 100;
-      const displayWinProb = rawProb < 0.1 ? "< 0.1" : rawProb.toFixed(1);
-      finalProbText = rawProb < 50 ? `${displayWinProb}% Underdog Upset!` : `${displayWinProb}% Expected Win`;
+      
+      // Remove the displayWinProb variable from these strings
+      finalProbText = rawProb < 50 ? "Underdog Upset!" : "Expected Win";
     }
 
     // Calculate the full gauntlet probability for the share text
