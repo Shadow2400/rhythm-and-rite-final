@@ -542,15 +542,19 @@ useEffect(() => {
                   const displayLoserProb = (100 - rawProb) < 0.1 ? "< 0.1" : (100 - rawProb).toFixed(1);
                   const isUnderdog = rawProb < 50;
 
-                  let victoryText = "";
-                  if (rawProb < 30) {
-                    victoryText = "A statistical anomaly. You executed a massive underdog victory against staggering odds!";
-                  } else if (rawProb >= 30 && rawProb < 50) {
-                    victoryText = "A razor-thin margin! You pulled off a tactical upset in a tightly contested match.";
-                  } else if (rawProb >= 50 && rawProb < 70) {
+                 let victoryText = "";
+                  if (rawProb < 25) {
+                    victoryText = "A statistical anomaly! Against overwhelming odds, your track survived.";
+                  } else if (rawProb >= 25 && rawProb < 45) {
+                    victoryText = "A decisive upset! The baseline data favored the opponent, but you are victorious in the end.";
+                  } else if (rawProb >= 45 && rawProb < 50) {
+                    victoryText = "A razor-thin margin! An evenly matched pairing, but your track ultimately prevailed.";
+                  } else if (rawProb >= 50 && rawProb < 55) {
                     victoryText = "A hard-fought victory! The data favored you, but they put up a serious fight.";
+                  } else if (rawProb >= 55 && rawProb < 75) {
+                    victoryText = "A calculated takedown! Your song secured a clean, undisputed victory.";
                   } else {
-                    victoryText = "An absolute knockout. You cruised to an easy, expected victory.";
+                    victoryText = "An absolute knockout! You cruised to an easy, effortless victory.";
                   }
 
                   // Calculate compounded historical probability of the full run
