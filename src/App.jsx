@@ -600,7 +600,7 @@ useEffect(() => {
                       <div className="mt-8 pt-6 border-t border-slate-800">
                         <p className="text-xs text-[#ff00ff] tracking-[0.2em] uppercase font-bold mb-2">The Final Odds</p>
                         <p className="text-sm md:text-base text-slate-300 leading-relaxed max-w-lg mx-auto text-left">
-                          Against global streaming data, the chance of your chosen track surviving the gauntlet to take the crown were <span className="font-black text-[#ff00ff]">{displayGauntletProb}%</span>.
+                          Against global streaming data, the chances of your chosen track surviving the gauntlet to take the crown were <span className="font-black text-[#ff00ff]">{displayGauntletProb}%</span>.
                         </p>
                       </div>
                     </div>
