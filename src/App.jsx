@@ -785,7 +785,7 @@ useEffect(() => {
 
                     <button 
                       onClick={(e) => handleMobilePreview(e, matchups[currentMatchIndex].audioFile)}
-                      className="mt-6 md:hidden px-6 py-2 bg-slate-900 border border-cyan-500 text-cyan-400 rounded-full font-bold tracking-widest uppercase text-xs shadow-[0_0_10px_rgba(34,211,238,0.3)] active:bg-cyan-900"
+                      className="mt-8 md:hidden w-[85%] min-h-[60px] flex items-center justify-center bg-slate-900/90 border-2 border-cyan-500 text-cyan-400 rounded-2xl font-black tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(34,211,238,0.3)] active:bg-cyan-900 active:scale-95 transition-all z-50 relative"
                     >
                       {playingUrl === matchups[currentMatchIndex].audioFile ? "⏹ STOP" : "▶ PREVIEW"}
                     </button>
@@ -849,7 +849,7 @@ useEffect(() => {
 
                         <button 
                           onClick={(e) => handleMobilePreview(e, matchups[currentMatchIndex + 1].audioFile)}
-                          className="mt-6 md:hidden px-6 py-2 bg-slate-900 border border-[#ff00ff] text-[#ff00ff] rounded-full font-bold tracking-widest uppercase text-xs shadow-[0_0_10px_rgba(255,0,255,0.3)] active:bg-fuchsia-900"
+                          className="mt-8 md:hidden w-[85%] min-h-[60px] flex items-center justify-center bg-slate-900/90 border-2 border-[#ff00ff] text-[#ff00ff] rounded-2xl font-black tracking-widest uppercase text-sm shadow-[0_0_20px_rgba(255,0,255,0.3)] active:bg-fuchsia-900 active:scale-95 transition-all z-50 relative"
                         >
                           {playingUrl === matchups[currentMatchIndex + 1].audioFile ? "⏹ STOP" : "▶ PREVIEW"}
                         </button>
